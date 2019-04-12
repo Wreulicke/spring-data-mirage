@@ -16,8 +16,12 @@
 package jp.xet.springframework.data.mirage.repository.support;
 
 import java.io.Serializable;
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 
+import org.springframework.core.convert.TypeDescriptor;
+import org.springframework.core.convert.converter.GenericConverter;
 import org.springframework.data.repository.core.EntityInformation;
 import org.springframework.data.repository.core.RepositoryInformation;
 import org.springframework.data.repository.core.RepositoryMetadata;
@@ -32,6 +36,8 @@ import org.slf4j.LoggerFactory;
 
 import com.miragesql.miragesql.SqlManager;
 
+import jp.xet.sparwings.spring.data.chunk.Chunk;
+import jp.xet.sparwings.spring.data.chunk.ChunkImpl;
 import jp.xet.springframework.data.mirage.repository.DefaultMirageRepository;
 import jp.xet.springframework.data.mirage.repository.Identifiable;
 import jp.xet.springframework.data.mirage.repository.IdentifiableMirageRepository;
@@ -40,7 +46,7 @@ import jp.xet.springframework.data.mirage.repository.query.MirageQueryLookupStra
 
 /**
  * TODO for daisuke
- * 
+ *
  * @since 0.1
  * @version $Id$
  * @author daisuke
@@ -51,10 +57,9 @@ public class MirageRepositoryFactory extends RepositoryFactorySupport {
 	
 	private final SqlManager sqlManager;
 	
-	
 	/**
 	 * インスタンスを生成する。
-	 * 
+	 *
 	 * @param sqlManager {@link SqlManager}
 	 * @throws IllegalArgumentException if the argument is {@code null}
 	 * @since 0.1
@@ -62,6 +67,17 @@ public class MirageRepositoryFactory extends RepositoryFactorySupport {
 	public MirageRepositoryFactory(SqlManager sqlManager) {
 		Assert.notNull(sqlManager, "sqlManager is required");
 		this.sqlManager = sqlManager;
+//		addConverter(new GenericConverter() {
+//			@Override public Set<ConvertiblePair> getConvertibleTypes() {
+//				HashSet<ConvertiblePair> set = new HashSet<>();
+//				set.add(new ConvertiblePair(ChunkImpl.class, Chunk.class));
+//				return set;
+//			}
+//
+//			@Override public Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
+//				return source;
+//			}
+//		});
 	}
 	
 	@Override
@@ -72,7 +88,7 @@ public class MirageRepositoryFactory extends RepositoryFactorySupport {
 	
 	@Override
 	protected Optional<QueryLookupStrategy> getQueryLookupStrategy(Key key,
-			QueryMethodEvaluationContextProvider evaluationContextProvider) {
+		QueryMethodEvaluationContextProvider evaluationContextProvider) {
 		return Optional.of(MirageQueryLookupStrategy.create(sqlManager, key));
 	}
 	
@@ -93,7 +109,7 @@ public class MirageRepositoryFactory extends RepositoryFactorySupport {
 		DefaultMirageRepository repos;
 		if (isIdentifiableJdbcRepository(entityInformation)) {
 			repos = new IdentifiableMirageRepository<Identifiable>(
-					(EntityInformation<Identifiable, ? extends Serializable>) entityInformation, sqlManager);
+				(EntityInformation<Identifiable, ? extends Serializable>) entityInformation, sqlManager);
 		} else {
 			repos = new DefaultMirageRepository(entityInformation, sqlManager);
 		}

@@ -72,6 +72,9 @@ repositories {
 	jcenter()
 	mavenCentral()
 	maven { url 'http://dl.bintray.com/dai0304/spar-wings' }
+	maven { url 'https://jitpack.io' }
+	maven { url 'https://repo.spring.io/milestone' }
+	maven { url 'https://repo.spring.io/snapshot' }
 }
 
 configurations {
@@ -81,12 +84,15 @@ configurations {
 dependencies {
 	compile "org.slf4j:slf4j-api:$slf4jVersion"
 	compile "com.google.guava:guava:$guavaVersion"
-	compile "org.springframework.data:spring-data-commons:$springDataCommonsVersion"
+	compile('com.github.wreulicke:spring-data-commons:0045abfb1a')
+//	compile "org.springframework.data:spring-data-commons:$springDataCommonsVersion"
 	compile "com.miragesql:miragesql:$mirageVersion"
 	compile "com.miragesql:miragesql-integration:$mirageVersion"
 	compileOnly "org.springframework:spring-context:$springVersion"
 	compileOnly "org.springframework:spring-jdbc:$springVersion"
-	compileOnly "jp.xet.spar-wings:spar-wings-spring-data-chunk:$sparWingsVersion"
+	compileOnly("jp.xet.spar-wings:spar-wings-spring-data-chunk:$sparWingsVersion") {
+		exclude module: 'spring-data-commons'
+	}
 
 	// tests
 	testCompile "junit:junit:$junitVersion"
