@@ -38,6 +38,7 @@ import com.miragesql.miragesql.SqlManager;
 
 import jp.xet.sparwings.spring.data.chunk.Chunk;
 import jp.xet.sparwings.spring.data.chunk.ChunkImpl;
+
 import jp.xet.springframework.data.mirage.repository.DefaultMirageRepository;
 import jp.xet.springframework.data.mirage.repository.Identifiable;
 import jp.xet.springframework.data.mirage.repository.IdentifiableMirageRepository;
@@ -57,6 +58,7 @@ public class MirageRepositoryFactory extends RepositoryFactorySupport {
 	
 	private final SqlManager sqlManager;
 	
+	
 	/**
 	 * インスタンスを生成する。
 	 *
@@ -67,17 +69,19 @@ public class MirageRepositoryFactory extends RepositoryFactorySupport {
 	public MirageRepositoryFactory(SqlManager sqlManager) {
 		Assert.notNull(sqlManager, "sqlManager is required");
 		this.sqlManager = sqlManager;
-//		addConverter(new GenericConverter() {
-//			@Override public Set<ConvertiblePair> getConvertibleTypes() {
-//				HashSet<ConvertiblePair> set = new HashSet<>();
-//				set.add(new ConvertiblePair(ChunkImpl.class, Chunk.class));
-//				return set;
-//			}
-//
-//			@Override public Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
-//				return source;
-//			}
-//		});
+		addConverter(new GenericConverter() {
+			@Override
+			public Set<ConvertiblePair> getConvertibleTypes() {
+				HashSet<ConvertiblePair> set = new HashSet<>();
+				set.add(new ConvertiblePair(ChunkImpl.class, Chunk.class));
+				return set;
+			}
+			
+			@Override
+			public Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
+				return source;
+			}
+		});
 	}
 	
 	@Override
@@ -88,7 +92,7 @@ public class MirageRepositoryFactory extends RepositoryFactorySupport {
 	
 	@Override
 	protected Optional<QueryLookupStrategy> getQueryLookupStrategy(Key key,
-		QueryMethodEvaluationContextProvider evaluationContextProvider) {
+			QueryMethodEvaluationContextProvider evaluationContextProvider) {
 		return Optional.of(MirageQueryLookupStrategy.create(sqlManager, key));
 	}
 	
@@ -109,7 +113,7 @@ public class MirageRepositoryFactory extends RepositoryFactorySupport {
 		DefaultMirageRepository repos;
 		if (isIdentifiableJdbcRepository(entityInformation)) {
 			repos = new IdentifiableMirageRepository<Identifiable>(
-				(EntityInformation<Identifiable, ? extends Serializable>) entityInformation, sqlManager);
+					(EntityInformation<Identifiable, ? extends Serializable>) entityInformation, sqlManager);
 		} else {
 			repos = new DefaultMirageRepository(entityInformation, sqlManager);
 		}
